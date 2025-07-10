@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import {
   MapPin,
   Calendar,
@@ -14,7 +15,7 @@ import {
   MapIcon,
   Lightbulb,
 } from "lucide-react";
-import { api } from '@/lib/api';
+import { api } from "@/lib/api";
 
 const Planner = () => {
   const [start, setStart] = useState("");
@@ -34,6 +35,19 @@ const Planner = () => {
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const [activeTab, setActiveTab] = useState("itinerary");
   const [optimizedRoute, setOptimizedRoute] = useState(null);
+  const location = useLocation();
+
+  // Only run this when component mounts and if tripQuery is present
+  useEffect(() => {
+      setTimeout(() => {
+        window.scrollTo(0,0);
+      }, 0);
+    if (location.state && location.state.tripQuery) {
+      const tripQuery = location.state.tripQuery;
+      setPreferences(tripQuery);
+    }
+    // eslint-disable-next-line
+  }, []);
 
   const mapRef = useRef(null);
   const googleMapRef = useRef(null);
@@ -428,7 +442,7 @@ const Planner = () => {
 
     try {
       const response = await api.planTrip(requestData);
-      
+
       if (!response.data) {
         throw new Error("Failed to generate trip plan");
       }
